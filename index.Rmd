@@ -1,0 +1,40 @@
+--- 
+title: "课程笔记"
+author: "流风邵"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+description: "这里想做一下自己学习过的系统性课程和笔记，先生成 gitbook 形式，完整之后再生成 PDF 文件。"
+---
+
+# 本书是如何生成的？ {-}
+
+本书是介绍 R 语言包 bookdown 来完成一本书的写作，bookdown 是建立在 R Markdown 基础之上的，继承了 Markdown 语法的简易性。它通过组织一系列 R Markdown 文件来输出多种格式（如 PDF，HTML，Word 等），同时也可以增加一些特征，比如，多页 HTML 输出，对 figures/tables/sections/equations 进行编号和交叉引用 ，插入 part/appendices，导入 GitBook ( [https://www.gitbook.com](https://www.gitbook.com/)）类型生成好看的 HTML 书页。
+
+#### 如何生成一本书？{-}
+
+1. 下载 Github 仓库 [bookdown-demo](<https://github.com/rstudio/bookdown-demo>)，然后解压，将仓库名称和工程名称修改为 MyNotes；
+2. 安装 R 包 bookdown；
+3. 使用 RStudio 编辑器打开这个工程，打开 MyCourses.Rproj，打开文件 index.Rmd，修改相对应内容；
+4. 打开 R Markdown 文件 index.Rmd，敲击 RStudio 中 Build 标签页中的 Build Book 即可生成最原始的书的形式。
+
+#### 格式微调 {-}
+
+模仿书籍 [R for Data Science](<https://r4ds.had.co.nz/>) 的 [github仓库](<https://github.com/hadley/r4ds>) 中的文件 _bookdown.yml 来修改我们对应的同名文件。
+
+* 每个 Rmd 文件只能包含一个章节，由一级标题 `#` 来定义；
+
+* `# title {-}`：在一级标题后面使用 `{-}` ，则标题不计入章节序号；
+
+* `# (PART) title {-}`：通过 (PART) 来体现一个部分包含几个章节；
+
+* 使用`_common.R`文件来调整显示图像的大小和位置，将其在 `_bookdown.yml`中配置。
+
+#### 文本语法 {-}
+
+详见 [bookdown 文档](<https://bookdown.org/yihui/bookdown/components.html>)。
