@@ -1,8 +1,9 @@
 
+
 --- 
-title: "课程笔记"
+title: "学习笔记"
 author: "流风邵"
-date: "2020-02-21"
+date: "2020-02-26"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
@@ -39,3 +40,22 @@ description: "这里想做一下自己学习过的系统性课程和笔记，先
 #### 文本语法 {-}
 
 详见 [bookdown 文档](<https://bookdown.org/yihui/bookdown/components.html>)。
+
+#### 部署 {-}
+
+使用 GitHub Pages 进行发布，具体操作依据 [bookdown 文档](https://bookdown.org/yihui/bookdown/github.html)：  
+
+1. 在命令行窗口中执行以下操作
+
+```r
+# create a hidden file .nojekyll
+touch .nojekyll
+
+# add to git here because will not show up in RStudio
+git add .nojekyll
+```
+
+2. 修改 `_bookdown.yml` 中的配置，即添加代码 `output_dir: "docs"`。
+
+3. 修改 GitHub 仓库的设置，将 "GitHub Pages" 中的 "Source" 修改为 "master branch /docs folder"。
+

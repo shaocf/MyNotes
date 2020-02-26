@@ -1,5 +1,5 @@
 
-# 学习回答 Yes/No
+# 学习回答 Yes/No {#yes_or_no}
 
 ## 感知假设集（Perceptron Hypothesis Set）
 
