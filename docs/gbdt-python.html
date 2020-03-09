@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 GBDT 算法 Python 代码调参 | 学习笔记</title>
+  <meta name="description" content="这里想做一下自己学习过的系统性课程和笔记，先生成 gitbook 形式，完整之后再生成 PDF 文件。" />
+  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 GBDT 算法 Python 代码调参 | 学习笔记" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="这里想做一下自己学习过的系统性课程和笔记，先生成 gitbook 形式，完整之后再生成 PDF 文件。" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 GBDT 算法 Python 代码调参 | 学习笔记" />
+  
+  <meta name="twitter:description" content="这里想做一下自己学习过的系统性课程和笔记，先生成 gitbook 形式，完整之后再生成 PDF 文件。" />
+  
+
+<meta name="author" content="流风邵" />
+
+
+<meta name="date" content="2020-03-05" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="yes-or-no.html">
+<link rel="next" href="xgboost-python-.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><strong><a href="./">学习笔记</a></strong></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>本书是如何生成的？</a></li>
+<li class="part"><span><b>I 机器学习基石</b></span></li>
+<li class="chapter" data-level="1" data-path="problem.html"><a href="problem.html"><i class="fa fa-check"></i><b>1</b> 学习问题</a><ul>
+<li class="chapter" data-level="1.1" data-path="problem.html"><a href="problem.html#section-1.1"><i class="fa fa-check"></i><b>1.1</b> 什么是机器学习</a></li>
+<li class="chapter" data-level="1.2" data-path="problem.html"><a href="problem.html#section-1.2"><i class="fa fa-check"></i><b>1.2</b> 机器学习组成</a></li>
+<li class="chapter" data-level="1.3" data-path="problem.html"><a href="problem.html#section-1.3"><i class="fa fa-check"></i><b>1.3</b> 机器学习和其它领域</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="problem.html"><a href="problem.html#section-1.3.1"><i class="fa fa-check"></i><b>1.3.1</b> 机器学习和数据挖掘</a></li>
+<li class="chapter" data-level="1.3.2" data-path="problem.html"><a href="problem.html#section-1.3.2"><i class="fa fa-check"></i><b>1.3.2</b> 机器学习和人工智能</a></li>
+<li class="chapter" data-level="1.3.3" data-path="problem.html"><a href="problem.html#section-1.3.3"><i class="fa fa-check"></i><b>1.3.3</b> 机器学习和统计</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="yes-or-no.html"><a href="yes-or-no.html"><i class="fa fa-check"></i><b>2</b> 学习回答 Yes/No</a><ul>
+<li class="chapter" data-level="2.1" data-path="yes-or-no.html"><a href="yes-or-no.html#perceptron-hypothesis-set"><i class="fa fa-check"></i><b>2.1</b> 感知假设集（Perceptron Hypothesis Set）</a></li>
+<li class="chapter" data-level="2.2" data-path="yes-or-no.html"><a href="yes-or-no.html#perceptron-learning-algorithm"><i class="fa fa-check"></i><b>2.2</b> 感知学习算法（Perceptron Learning Algorithm）</a></li>
+<li class="chapter" data-level="2.3" data-path="yes-or-no.html"><a href="yes-or-no.html#pla-guarantee-of-pla"><i class="fa fa-check"></i><b>2.3</b> PLA 的确定性（Guarantee of PLA）</a></li>
+<li class="chapter" data-level="2.4" data-path="yes-or-no.html"><a href="yes-or-no.html#non-separable-data"><i class="fa fa-check"></i><b>2.4</b> 非可分数据集（Non-Separable Data）</a></li>
+</ul></li>
+<li class="part"><span><b>II 机器学习算法实例</b></span></li>
+<li class="chapter" data-level="3" data-path="gbdt-python.html"><a href="gbdt-python.html"><i class="fa fa-check"></i><b>3</b> GBDT 算法 Python 代码调参</a><ul>
+<li class="chapter" data-level="3.1" data-path="gbdt-python.html"><a href="gbdt-python.html#gbm-"><i class="fa fa-check"></i><b>3.1</b> GBM 参数</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="gbdt-python.html"><a href="gbdt-python.html#tree-specific-"><i class="fa fa-check"></i><b>3.1.1</b> Tree-Specific 参数</a></li>
+<li class="chapter" data-level="3.1.2" data-path="gbdt-python.html"><a href="gbdt-python.html#boosting-"><i class="fa fa-check"></i><b>3.1.2</b> Boosting 参数</a></li>
+<li class="chapter" data-level="3.1.3" data-path="gbdt-python.html"><a href="gbdt-python.html#miscellaneous-"><i class="fa fa-check"></i><b>3.1.3</b> Miscellaneous 参数</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="gbdt-python.html"><a href="gbdt-python.html#gbm-"><i class="fa fa-check"></i><b>3.2</b> GBM 参数调整实战</a></li>
+<li class="chapter" data-level="3.3" data-path="gbdt-python.html"><a href="gbdt-python.html#baseline-"><i class="fa fa-check"></i><b>3.3</b> baseline 模型</a></li>
+<li class="chapter" data-level="3.4" data-path="gbdt-python.html"><a href="gbdt-python.html#section-3.4"><i class="fa fa-check"></i><b>3.4</b> 参数调节的一般方法</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="gbdt-python.html"><a href="gbdt-python.html#-learning-rate---tree-based-"><i class="fa fa-check"></i><b>3.4.1</b> 固定 learning rate 和 估计器（树）的数量，调整 tree-based 参数</a></li>
+<li class="chapter" data-level="3.4.2" data-path="gbdt-python.html"><a href="gbdt-python.html#-tree-specific-"><i class="fa fa-check"></i><b>3.4.2</b> 调整 tree-specific 参数</a></li>
+<li class="chapter" data-level="3.4.3" data-path="gbdt-python.html"><a href="gbdt-python.html#-subsample-learning-rate-"><i class="fa fa-check"></i><b>3.4.3</b> 调整 subsample，并且运行更低的 learning rate 下的模型</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="gbdt-python.html"><a href="gbdt-python.html#section-3.5"><i class="fa fa-check"></i><b>3.5</b> 结语</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="xgboost-python-.html"><a href="xgboost-python-.html"><i class="fa fa-check"></i><b>4</b> XGBoost 算法 Python 代码调参</a><ul>
+<li class="chapter" data-level="4.1" data-path="xgboost-python-.html"><a href="xgboost-python-.html#xgboost-"><i class="fa fa-check"></i><b>4.1</b> XGBoost 优点</a></li>
+<li class="chapter" data-level="4.2" data-path="xgboost-python-.html"><a href="xgboost-python-.html#xgboost-"><i class="fa fa-check"></i><b>4.2</b> XGBoost 参数介绍</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="xgboost-python-.html"><a href="xgboost-python-.html#section-4.2.1"><i class="fa fa-check"></i><b>4.2.1</b> 通用参数</a></li>
+<li class="chapter" data-level="4.2.2" data-path="xgboost-python-.html"><a href="xgboost-python-.html#tree-booster-"><i class="fa fa-check"></i><b>4.2.2</b> Tree Booster 参数</a></li>
+<li class="chapter" data-level="4.2.3" data-path="xgboost-python-.html"><a href="xgboost-python-.html#section-4.2.3"><i class="fa fa-check"></i><b>4.2.3</b> 学习任务参数</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="xgboost-python-.html"><a href="xgboost-python-.html#xgboost-"><i class="fa fa-check"></i><b>4.3</b> XGBoost 实例调参</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="xgboost-python-.html"><a href="xgboost-python-.html#section-4.3.1"><i class="fa fa-check"></i><b>4.3.1</b> 调参的通常步骤</a></li>
+<li class="chapter" data-level="4.3.2" data-path="xgboost-python-.html"><a href="xgboost-python-.html#1-learning-rate-learning-rate--number-of-estimators"><i class="fa fa-check"></i><b>4.3.2</b> 第1步：固定 learning rate，找出在这个 learning rate 下的最优的 number of estimators</a></li>
+<li class="chapter" data-level="4.3.3" data-path="xgboost-python-.html"><a href="xgboost-python-.html#2max_depth--min_child_weight-"><i class="fa fa-check"></i><b>4.3.3</b> 第2步：max_depth 和 min_child_weight 调优</a></li>
+<li class="chapter" data-level="4.3.4" data-path="xgboost-python-.html"><a href="xgboost-python-.html#3gamma-"><i class="fa fa-check"></i><b>4.3.4</b> 第3步：gamma 调优</a></li>
+<li class="chapter" data-level="4.3.5" data-path="xgboost-python-.html"><a href="xgboost-python-.html#4subsample--colsample_bytree-"><i class="fa fa-check"></i><b>4.3.5</b> 第4步：subsample 和 colsample_bytree 调优</a></li>
+<li class="chapter" data-level="4.3.6" data-path="xgboost-python-.html"><a href="xgboost-python-.html#5"><i class="fa fa-check"></i><b>4.3.6</b> 第5步：正则化参数调优</a></li>
+<li class="chapter" data-level="4.3.7" data-path="xgboost-python-.html"><a href="xgboost-python-.html#6-learning-rate"><i class="fa fa-check"></i><b>4.3.7</b> 第6步：降低 learning rate</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>III Git 和 GitHub</b></span></li>
+<li class="chapter" data-level="5" data-path="git.html"><a href="git.html"><i class="fa fa-check"></i><b>5</b> Git 使用</a><ul>
+<li class="chapter" data-level="5.1" data-path="git.html"><a href="git.html#section-5.1"><i class="fa fa-check"></i><b>5.1</b> 本地仓库对应远程库</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">学习笔记</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="gbdt-python" class="section level1">
+<h1><span class="header-section-number">3</span> GBDT 算法 Python 代码调参</h1>
+<p>本篇文章的原文为<a href="https://www.analyticsvidhya.com/blog/2016/02/complete-guide-parameter-tuning-gradient-boosting-gbm-python/">Complete Machine Learning Guide to Parameter Tuning in Gradient Boosting (GBM) in Python</a>。</p>
+<p>Bagging 只能控制模型的 variance，而 Boosting 算法可以控制模型 bias 和 variance 的平衡，因此，Boosting 在实际问题中可能效果更好。</p>
+<p><strong>本文包含两个方面的内容：</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>理解 GBM 的参数</p></li>
+<li><p>GBM 参数调整实战</p></li>
+</ol>
+<div id="gbm-" class="section level2">
+<h2><span class="header-section-number">3.1</span> GBM 参数</h2>
+<p><strong>GBM 的参数可以分为 3 类：</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>Tree-Specific 参数：可以控制模型中的每棵树；</p></li>
+<li><p>Boosting 参数：控制模型中的 boosting 操作；</p></li>
+<li><p>Miscellaneous 参数：控制整体功能的参数。</p></li>
+</ol>
+<div id="tree-specific-" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Tree-Specific 参数</h3>
+<p>首先看一下决策树的结构：</p>
+<p><img src="images/ml_example_gbdt/1.png" width="100%" style="display: block; margin: auto;" /></p>
+<ol style="list-style-type: decimal">
+<li><strong>min_sample_split</strong></li>
+</ol>
+<ul>
+<li>定义一个节点是否需要再分裂的样本（观察值）数量，比如上图中，定义的阈值为 70，如果节点样本数量小于 70，则这个节点就不能再继续分裂；</li>
+<li>控制过拟合。较高的值会阻碍模型学习特定的模式，该模式可以高度区分一棵树中的特定样本。</li>
+<li>此参数取值过高会导致欠拟合，应该使用交叉验证进行调整。</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>min_samples_leaf</strong></li>
+</ol>
+<ul>
+<li>定义一个终端（叶子）节点的最小样本（观察值）数量，上图中定义的阈值为 30，叶子节点的最小样本不能少于 30；</li>
+<li>和 <code>min_samples_split</code>类似，控制过拟合。</li>
+<li>当针对不平衡分类问题时，会选取较低的值。</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>min_weight_fraction_leaf</strong></li>
+</ol>
+<ul>
+<li>类似于<code>min_samples_leaf</code>，只不过定义的是叶子节点样本数量占总样本数量的比例；</li>
+<li><code>min_samples_leaf</code> 和 <code>min_weight_fraction_leaf</code> 只需要定义一个。</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>max_depth</strong></li>
+</ol>
+<ul>
+<li>定义一棵树的最大深度；</li>
+<li>通常用来控制过拟合，高的深度会可以让模型学习特定样本的模式；</li>
+<li>需要使用交叉验证来调整。</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>max_leaf_nodes</strong></li>
+</ol>
+<ul>
+<li>定义一棵树的最大终端（叶子）节点的数量；</li>
+<li>可以替代 <code>max_depth</code>，因为二叉树的性质，深度为 n 的的树最多有 <span class="math inline">\(2^n\)</span> 个叶子节点；</li>
+<li>如果这个参数被定义，GBM 会忽略参数 <code>max_depth</code>。</li>
+</ul>
+<ol start="6" style="list-style-type: decimal">
+<li><strong>max_features</strong></li>
+</ol>
+<ul>
+<li>搜索最好的分裂点需要考虑的特征数量。定义之后，将会随机选择特征；</li>
+<li>作为一个金手指法则，取特征总数量的平方根会有一个不错的效果，但是，我们会检验特征总数量的 30% ~ 40%；</li>
+<li>更高的值会导致过拟合，但依情况而定。</li>
+</ul>
+<p>在介绍其它参数之前，可以先看一下 GBM 在二分类数据训练中的伪代码：</p>
+<pre><code>1. Initialize the outcome
+2. Iterate from 1 to total number of trees
+  2.1 Update the weights for targets based on previous run (higher for the ones mis-classified)
+  2.2 Fit the model on selected subsample of data
+  2.3 Make predictions on the full set of observations
+  2.4 Update the output with current results taking into account the learning rate
+3. Return the final output.</code></pre>
+<p>以上是 GBM 运行的简化解释。我们以上所介绍的参数只会影响步骤 2.2，下面引入其它的参数。</p>
+</div>
+<div id="boosting-" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Boosting 参数</h3>
+<ol style="list-style-type: decimal">
+<li><strong>learning_rate</strong></li>
+</ol>
+<ul>
+<li>这个参数决定了每棵树在最终结果中产生的影响大小（步骤 2.4）。GBM</li>
+<li>通常偏向于选择较小的值，因为它可以使模型对树的特定特征更具有健壮性。</li>
+<li>如果取值比较小，则将会需要更多的树来拟合所有的关系，计算量会非常大。</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>n_estimators</strong></li>
+</ol>
+<ul>
+<li>模型中有序树的数量（步骤 2）；</li>
+<li>虽然 GBM 在树的数量比较大时相对更加稳健，但是它仍有可能会产生过拟合。因此，在一个特定的 <code>learning_rate</code> 下需要通过交叉验证调整 <code>n_estimators</code>。</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>subsample</strong></li>
+</ol>
+<ul>
+<li>每棵树中选择的观察值比例，通过随机抽样来选择；</li>
+<li>如果取值小于 1，模型通过减少 variance 会更加稳健；</li>
+<li>典型值 0.8 表现的不错，但是这个值仍然需要微调。</li>
+</ul>
+</div>
+<div id="miscellaneous-" class="section level3">
+<h3><span class="header-section-number">3.1.3</span> Miscellaneous 参数</h3>
+<p>除了上面介绍的两类参数，还有其它的参数。</p>
+<ol style="list-style-type: decimal">
+<li><strong>loss</strong></li>
+</ol>
+<ul>
+<li>在每次分裂时需要最小化的损失函数；</li>
+<li>对于分类和回归的情况下有多种值可选。通常默认值表现不错，除非你了解其它值对模型的影响，否则尽量不用。</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>init</strong></li>
+</ol>
+<ul>
+<li>影响输出的初始化；</li>
+<li>如果我们将另一个模型的输出结果作为 GBM 的初始估计，则可以使用它。</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>random_state</strong></li>
+</ol>
+<ul>
+<li>随机数种子可以在每次运行中产生相同的随机数；</li>
+<li>在某一个特殊的随机样本挑选中，也存在潜在的过拟合。我们可以尝试不同的随机样本来运行模型，不过计算量太大，所以我们基本不会去做。</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>verbose</strong></li>
+</ol>
+<ul>
+<li>模型拟合后打印的输出类型，不同的值为：
+<ul>
+<li>0：不会产生输出（默认）</li>
+<li>1：以某以间隔输出产生树</li>
+<li>大于 1：输出所有产生树</li>
+</ul></li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>warm_start</strong></li>
+</ol>
+<ul>
+<li>使用它可以在先前模型拟合的基础上拟合额外的树，它可以节省很多时间，可以去探索它。</li>
+</ul>
+<ol start="6" style="list-style-type: decimal">
+<li><strong>presort</strong></li>
+</ol>
+<ul>
+<li>选择是否为更快的分裂预排序数据；</li>
+<li>它使得选择默认自动化，但是如果需要的话可以改变。</li>
+</ul>
+</div>
+</div>
+<div id="gbm-" class="section level2">
+<h2><span class="header-section-number">3.2</span> GBM 参数调整实战</h2>
+<p><strong>在进行 GBM 调参之前，我们已经完成了对数据的清理工作。</strong></p>
+<p>我们导入需要的库并加载数据：</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> numpy <span class="im">as</span> np
+<span class="im">import</span> pandas <span class="im">as</span> pd
+<span class="im">from</span> sklearn.ensemble <span class="im">import</span> GradientBoostingClassifier  <span class="co"># GBM 算法</span>
+<span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score
+<span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV
+<span class="im">from</span> sklearn <span class="im">import</span> metrics
+
+<span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt
+<span class="op">%</span>matplotlib inline
+plt.rcParams[<span class="st">&#39;figure.figsize&#39;</span>] <span class="op">=</span> <span class="dv">12</span>, <span class="dv">4</span> 
+
+train <span class="op">=</span> pd.read.csv(<span class="st">&#39;train_modified.csv&#39;</span>)
+target <span class="op">=</span> <span class="st">&#39;Disbursed&#39;</span>
+IDcol <span class="op">=</span> <span class="st">&#39;ID&#39;</span></code></pre></div>
+<p>在继续进行之前，我们先定义一个函数，可以帮助我们创建 GBM 模型，并且执行 cross-validation。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> modelfit(alg, dtrain, predictors, performCV<span class="op">=</span><span class="va">True</span>, printFeatureImportance<span class="op">=</span><span class="va">True</span>, cv_folds<span class="op">=</span><span class="dv">5</span>):
+    <span class="co">#Fit the algorithm on the data</span>
+    alg.fit(dtrain[predictors], dtrain[<span class="st">&#39;Disbursed&#39;</span>])
+        
+    <span class="co">#Predict training set:</span>
+    dtrain_predictions <span class="op">=</span> alg.predict(dtrain[predictors])
+    dtrain_predprob <span class="op">=</span> alg.predict_proba(dtrain[predictors])[:,<span class="dv">1</span>]
+    
+    <span class="co">#Perform cross-validation:</span>
+    <span class="cf">if</span> performCV:
+        cv_score <span class="op">=</span> cross_val_score(alg, dtrain[predictors], dtrain[<span class="st">&#39;Disbursed&#39;</span>], cv<span class="op">=</span>cv_folds, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>)
+    
+    <span class="co">#Print model report:</span>
+    <span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Model Report&quot;</span>)
+    <span class="bu">print</span>(<span class="st">&quot;Accuracy : </span><span class="sc">%.4g</span><span class="st">&quot;</span> <span class="op">%</span> metrics.accuracy_score(dtrain[<span class="st">&#39;Disbursed&#39;</span>].values, dtrain_predictions))
+    <span class="bu">print</span>(<span class="st">&quot;AUC Score (Train): </span><span class="sc">%f</span><span class="st">&quot;</span> <span class="op">%</span> metrics.roc_auc_score(dtrain[<span class="st">&#39;Disbursed&#39;</span>], dtrain_predprob))
+    
+    <span class="cf">if</span> performCV:
+        <span class="bu">print</span>(<span class="st">&quot;CV Score : Mean - </span><span class="sc">%.7g</span><span class="st"> | Std - </span><span class="sc">%.7g</span><span class="st"> | Min - </span><span class="sc">%.7g</span><span class="st"> | Max - </span><span class="sc">%.7g</span><span class="st">&quot;</span> <span class="op">%</span> (np.mean(cv_score),np.std(cv_score),np.<span class="bu">min</span>(cv_score),np.<span class="bu">max</span>(cv_score)))
+                
+    <span class="co">#Print Feature Importance:</span>
+    <span class="cf">if</span> printFeatureImportance:
+        feat_imp <span class="op">=</span> pd.Series(alg.feature_importances_, predictors).sort_values(ascending<span class="op">=</span><span class="va">False</span>)
+        feat_imp.plot(kind<span class="op">=</span><span class="st">&#39;bar&#39;</span>, title<span class="op">=</span><span class="st">&#39;Feature Importances&#39;</span>)
+        plt.ylabel(<span class="st">&#39;Feature Importance Score&#39;</span>)    </code></pre></div>
+<p>模型默认参数</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">GradientBoostingClassifier(loss<span class="op">=</span><span class="st">&#39;deviance&#39;</span>, learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">100</span>, subsample<span class="op">=</span><span class="fl">1.0</span>, 
+criterion<span class="op">=</span><span class="st">&#39;friedman_mse&#39;</span>, min_samples_split<span class="op">=</span><span class="dv">2</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, min_weight_fraction_leaf<span class="op">=</span><span class="fl">0.0</span>, 
+max_depth<span class="op">=</span><span class="dv">3</span>, min_impurity_decrease<span class="op">=</span><span class="fl">0.0</span>, min_impurity_split<span class="op">=</span><span class="va">None</span>, init<span class="op">=</span><span class="va">None</span>, random_state<span class="op">=</span><span class="va">None</span>, 
+max_features<span class="op">=</span><span class="va">None</span>, verbose<span class="op">=</span><span class="dv">0</span>, max_leaf_nodes<span class="op">=</span><span class="va">None</span>, warm_start<span class="op">=</span><span class="va">False</span>, presort<span class="op">=</span><span class="st">&#39;deprecated&#39;</span>, 
+validation_fraction<span class="op">=</span><span class="fl">0.1</span>, n_iter_no_change<span class="op">=</span><span class="va">None</span>, tol<span class="op">=</span><span class="fl">0.0001</span>, ccp_alpha<span class="op">=</span><span class="fl">0.0</span>)</code></pre></div>
+</div>
+<div id="baseline-" class="section level2">
+<h2><span class="header-section-number">3.3</span> baseline 模型</h2>
+<p>我们首先创建一个 baseline 模型。一个好的 baseline 模型使用默认的 GBM 参数，即不用调整参数。如下：</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Choose all predictors except target &amp; IDcols</span>
+predictors <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> train.columns <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> [target, IDcol]]
+gbm0 <span class="op">=</span> GradientBoostingClassifier(random_state<span class="op">=</span><span class="dv">10</span>)
+modelfit(gbm0, train, predictors)</code></pre></div>
+<p><img src="images/ml_example_gbdt/2.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>所以，平均 CV 得分为 0.8319，我们想模型结果比这个更好。</p>
+</div>
+<div id="section-3.4" class="section level2">
+<h2><span class="header-section-number">3.4</span> 参数调节的一般方法</h2>
+<p>在以上讨论中，有两种参数可以调节—— <strong>tree-based 和 boosting 参数</strong>。假设我们可以训练足够多的树，则对于 learning rate 没有最优值，因为总是越低的值表现越好。</p>
+<p>虽然随着训练树的增加，GBM 足够稳健而不会过拟合，但是，对于一个比较高的 learning rate 可以导致过拟合。我们可以减小 learning rate 和增加 tree 的数量，但是，这又会导致在个人电脑上计算量比较大而花费过多的时间。</p>
+<p>我们可以采用以下的步骤：</p>
+<ol style="list-style-type: decimal">
+<li>选择一个相对 <strong>较高的 learning rate</strong>。通常默认值 0.1 可以运行的不错，但是对不同的问题，我们可以选择 0.05 ~ 0.2 之间的值；</li>
+<li>在这个 <strong>learning rate</strong> 下确定 <strong>最优的树的数量</strong>。这个最好是在 40~70 之间。记住，选择一个可以在你的系统上运行比较快的值，这是因为它将被用来测试大量的场景并且决定树的参数；</li>
+<li>在 <strong>learning rate</strong> 和 <strong>树的数量</strong> 确定的情况下，<strong>调整 tree-specific 参数</strong>。</li>
+<li><strong>降低 learning rate</strong> 并且按比例的增加估计器的数量得到更加稳健的模型。</li>
+</ol>
+<div id="-learning-rate---tree-based-" class="section level3">
+<h3><span class="header-section-number">3.4.1</span> 固定 learning rate 和 估计器（树）的数量，调整 tree-based 参数</h3>
+<p>为了决定 boosting 参数，我们需要设定一些其它参数的初始值。首先取下面的值：</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>min_samples_split = 500</strong>：这个通常设置为大约总样本的 0.5~1%. 由于本章涉及到的是类不平衡问题，因此我们选择此范围中比较小的值。</p></li>
+<li><p><strong>min_samples_leaf = 50</strong>：可以基于直觉选择。这个变量用来防止过拟合，对于这里类不平衡问题，我们仍然选择一个小一点的值。</p></li>
+<li><p><strong>max_depth = 8</strong>：基于观察值和预测变量的数量来作选择（一般为 5~8）。文章样本有 87K 行，49 列，我们这里取值为 8。</p></li>
+<li><p><strong>max_features = ‘sqrt’</strong>：初始值使用平方根通常是一个金法则。</p></li>
+<li><p><strong>subsample = 0.8</strong>：这是一个通常使用的初始值。</p></li>
+</ol>
+<blockquote>
+<p>注意：上面列出的都是初始值，后面将会作调整。</p>
+</blockquote>
+<p>这里我们取 learning rate 为 0.1（默认值），得到最优的树的数量。为了得到树的数量，我们对其进行网格搜索。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Choose all predictors except target &amp; IDcols</span>
+predictors <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> train.columns <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> [target, IDcol]]
+param_test1 <span class="op">=</span> {<span class="st">&#39;n_estimators&#39;</span>:<span class="bu">range</span>(<span class="dv">20</span>, <span class="dv">81</span>, <span class="dv">10</span>)}
+gsearch1 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, min_samples_split<span class="op">=</span><span class="dv">500</span>,
+                                  min_samples_leaf<span class="op">=</span><span class="dv">50</span>, max_depth<span class="op">=</span><span class="dv">8</span>, max_features<span class="op">=</span><span class="st">&#39;sqrt&#39;</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, random_state<span class="op">=</span><span class="dv">10</span>), 
+                       param_grid <span class="op">=</span> param_test1, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+gsearch1.fit(train[predictors], train[target])</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">gsearch1.best_params_, gsearch1.best_score_, gsearch1.best_index_
+
+<span class="co"># 输出值</span>
+({<span class="st">&#39;n_estimators&#39;</span>: <span class="dv">60</span>}, <span class="fl">0.8393875216177697</span>, <span class="dv">4</span>)</code></pre></div>
+<p>可以看到，在 learning rate 为 0.1 的情况下我们得到最优树的数量为 60。在这里指出，60 是一个通常使用的合理的值，但是在其它案例中可能不会得到同样的值。</p>
+<ol style="list-style-type: decimal">
+<li><p>如果得到的值为 20 左右，可能你需要将 learning rate 降低到 0.05，然后重新运行网格搜索；</p></li>
+<li><p>如果得到的值太高（比如大约 100），调参的过程将会很耗时，你可以使用一个比较高的学习率。</p></li>
+</ol>
+</div>
+<div id="-tree-specific-" class="section level3">
+<h3><span class="header-section-number">3.4.2</span> 调整 tree-specific 参数</h3>
+<p>调整 based-tree 的参数，可以按照下面的步骤：</p>
+<ol style="list-style-type: decimal">
+<li>调整 max_depth 和 num_samples_split</li>
+<li>调整 min_samples_leaf</li>
+<li>调整 max_features</li>
+</ol>
+<p>调整参数的顺序要小心决定。你应该首先选择对输出结果有更高影响力的参数，例如，max_depth 和 min_samples_split。</p>
+<blockquote>
+<p>重要通知：可以根据自己的机器和系统来调整需要网格搜索的参数数量。</p>
+</blockquote>
+<p>我们首先将 max_depth 设置为区间 5~15 上，步长为 2，设置 min_samples_split 区间为 200 ~ 1000，步长为 200。这些是基于直觉设定的，你也可以先设置更大的范围，然后在更小的范围上进行多次迭代。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Grid seach on max_depth and min_samples_split</span>
+param_test2 <span class="op">=</span> {<span class="st">&#39;max_depth&#39;</span>:<span class="bu">range</span>(<span class="dv">5</span>,<span class="dv">16</span>,<span class="dv">2</span>), <span class="st">&#39;min_samples_split&#39;</span>:<span class="bu">range</span>(<span class="dv">200</span>,<span class="dv">1001</span>,<span class="dv">200</span>)}
+gsearch2 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">60</span>, 
+                        min_samples_leaf<span class="op">=</span><span class="dv">50</span>, max_features<span class="op">=</span><span class="st">&#39;sqrt&#39;</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, random_state<span class="op">=</span><span class="dv">10</span>), 
+                       param_grid <span class="op">=</span> param_test2, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+gsearch2.fit(train[predictors],train[target])
+
+gsearch2.best_params_, gsearch2.best_score_, gsearch2.best_index_ 
+<span class="co"># 输出结果</span>
+({<span class="st">&#39;max_depth&#39;</span>: <span class="dv">7</span>, <span class="st">&#39;min_samples_split&#39;</span>: <span class="dv">1000</span>}, <span class="fl">0.8390202547430871</span>, <span class="dv">9</span>)</code></pre></div>
+<p>我们运行了 30 对混合参数，得到理想的值 max_depth 为 7，min_samples_split 为 1000。其中，1000 是我们在上面设置的极值，有可能最优的值会比它大，所以我们应该测试一下更高的值。</p>
+<p>这里，我们选定 max_depth 为 7，而且在选取更高的 min_samples_split 时也不再改变 max_depth 的值。虽然这不是最理想的情况，但是在这里的问题上可以看出它是一个比较合理的值。同时，我们测试 min_samples_leaf 的 5 个值。</p>
+<blockquote>
+<p>如果可以看到每一组参数下的交叉验证结果会比较好，这样我们就可以查看某一个确定参数值下，其它参数变化时最终的交叉验证结果。</p>
+</blockquote>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Grid seach on min_samples_split and min_samples_leaf</span>
+param_test3 <span class="op">=</span> {<span class="st">&#39;min_samples_split&#39;</span>:<span class="bu">range</span>(<span class="dv">1000</span>,<span class="dv">2100</span>,<span class="dv">200</span>), <span class="st">&#39;min_samples_leaf&#39;</span>:<span class="bu">range</span>(<span class="dv">30</span>,<span class="dv">71</span>,<span class="dv">10</span>)}
+gsearch3 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">60</span>,max_depth<span class="op">=</span><span class="dv">7</span>,
+                                                    max_features<span class="op">=</span><span class="st">&#39;sqrt&#39;</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, random_state<span class="op">=</span><span class="dv">10</span>), 
+                       param_grid <span class="op">=</span> param_test3, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>,n_jobs<span class="op">=</span><span class="dv">4</span>,iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+gsearch3.fit(train[predictors],train[target])
+
+gsearch3.best_params_, gsearch3.best_score_
+<span class="co"># 输出结果</span>
+({<span class="st">&#39;min_samples_leaf&#39;</span>: <span class="dv">70</span>, <span class="st">&#39;min_samples_split&#39;</span>: <span class="dv">1000</span>}, <span class="fl">0.84018902830047</span>)
+
+modelfit(gsearch3.best_estimator_, train, predictors)</code></pre></div>
+<p>我们得到最优值 min_samples_split 为 1000，min_samples_leaf 为 70。再者，我们可以看到 CV 得分现在为 0.84019。</p>
+<p><img src="images/ml_example_gbdt/3.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>如果将这个模型与 baseline 模型比较特征重要性，可以看到，我们可以从其它变量中得到一些信息。当然，之前的模型将太多的重要性施加到某些变量上，现在分布的比较均匀。</p>
+<p>现在，我们调整最后的 tree-based 参数 max_features。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Grid seach on max_features</span>
+param_test4 <span class="op">=</span> {<span class="st">&#39;max_features&#39;</span>:<span class="bu">range</span>(<span class="dv">5</span>,<span class="dv">20</span>,<span class="dv">2</span>)}
+gsearch4 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">60</span>, max_depth<span class="op">=</span><span class="dv">7</span>, 
+                            min_samples_split<span class="op">=</span><span class="dv">1000</span>, min_samples_leaf<span class="op">=</span><span class="dv">70</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, random_state<span class="op">=</span><span class="dv">10</span>),
+                       param_grid <span class="op">=</span> param_test4, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+gsearch4.fit(train[predictors],train[target])
+
+gsearch4.best_params_, gsearch4.best_score_
+<span class="co"># 输出结果</span>
+({<span class="st">&#39;max_features&#39;</span>: <span class="dv">7</span>}, <span class="fl">0.84018902830047</span>)</code></pre></div>
+<p>这里，我们发现最优值为 7，刚好是平方根，所以我们设置的初始值就是最好的。现在，我们有最后的 tree-based 的参数的结果：</p>
+<ul>
+<li>min_samples_split：1000</li>
+<li>min_samples_leaf：70</li>
+<li>max_depth：7</li>
+<li>max_features：7</li>
+</ul>
+</div>
+<div id="-subsample-learning-rate-" class="section level3">
+<h3><span class="header-section-number">3.4.3</span> 调整 subsample，并且运行更低的 learning rate 下的模型</h3>
+<p>我们将测试不同的 subsample 值：</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Grid seach on subsample </span>
+param_test5 <span class="op">=</span> {<span class="st">&#39;subsample&#39;</span>:[<span class="fl">0.6</span>,<span class="fl">0.7</span>,<span class="fl">0.75</span>,<span class="fl">0.8</span>,<span class="fl">0.85</span>,<span class="fl">0.9</span>]}
+gsearch5 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">60</span>, 
+                                    max_depth<span class="op">=</span><span class="dv">7</span>, min_samples_split<span class="op">=</span><span class="dv">1000</span>, min_samples_leaf<span class="op">=</span><span class="dv">70</span>, 
+                                    subsample<span class="op">=</span><span class="fl">0.8</span>, random_state<span class="op">=</span><span class="dv">10</span>, max_features<span class="op">=</span><span class="dv">7</span>),
+                       param_grid <span class="op">=</span> param_test5, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+gsearch5.fit(train[predictors],train[target])
+
+gsearch5.best_params_, gsearch5.best_score_
+<span class="co"># 输出结果</span>
+({<span class="st">&#39;subsample&#39;</span>: <span class="fl">0.8</span>}, <span class="fl">0.84018902830047</span>)</code></pre></div>
+<p>我们发现最优值为 0.8。最后，我们有所有需要的参数了。现在，我们需要降低 leanring rate，并且成比例的增加估计器（树）的数量。需要注意，这些树可能不是最优的值，但是是一个好的测试。</p>
+<p>随着树的增加，执行 cross validation 和找到最优值是非常耗时的。</p>
+<p>首先将 learning rate 减半，即 0.05，然后增加树的数量到 120。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Choose all predictors except target &amp; IDcols</span>
+predictors <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> train.columns <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> [target, IDcol]]
+gbm_tuned_1 <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.05</span>, n_estimators<span class="op">=</span><span class="dv">120</span>,max_depth<span class="op">=</span><span class="dv">7</span>, min_samples_split<span class="op">=</span><span class="dv">1000</span>, 
+                                         min_samples_leaf<span class="op">=</span><span class="dv">70</span>, subsample<span class="op">=</span><span class="fl">0.80</span>, random_state<span class="op">=</span><span class="dv">10</span>, max_features<span class="op">=</span><span class="dv">7</span>)
+modelfit(gbm_tuned_1, train, predictors)</code></pre></div>
+<p><img src="images/ml_example_gbdt/4.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>我们可以将 learning rate 减小到原来的 1/10，即 0.01，然后训练 600 棵树。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Choose all predictors except target &amp; IDcols</span>
+predictors <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> train.columns <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> [target, IDcol]]
+gbm_tuned_2 <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.01</span>, n_estimators<span class="op">=</span><span class="dv">600</span>,max_depth<span class="op">=</span><span class="dv">7</span>, min_samples_split<span class="op">=</span><span class="dv">1000</span>, 
+                                         min_samples_leaf<span class="op">=</span><span class="dv">70</span>, subsample<span class="op">=</span><span class="fl">0.80</span>, random_state<span class="op">=</span><span class="dv">10</span>, max_features<span class="op">=</span><span class="dv">7</span>)
+modelfit(gbm_tuned_2, train, predictors)</code></pre></div>
+<p><img src="images/ml_example_gbdt/5.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>将 learning rate 减小到原来的 1/20，然后训练 1200 棵树。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Choose all predictors except target &amp; IDcols</span>
+predictors <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> train.columns <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> [target, IDcol]]
+gbm_tuned_3 <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.005</span>, n_estimators<span class="op">=</span><span class="dv">1200</span>,max_depth<span class="op">=</span><span class="dv">7</span>, min_samples_split<span class="op">=</span><span class="dv">1000</span>, 
+                                         min_samples_leaf<span class="op">=</span><span class="dv">70</span>, subsample<span class="op">=</span><span class="fl">0.80</span>, random_state<span class="op">=</span><span class="dv">10</span>, max_features<span class="op">=</span><span class="dv">7</span>,
+                                         warm_start<span class="op">=</span><span class="va">True</span>)
+modelfit(gbm_tuned_3, train, predictors, performCV<span class="op">=</span><span class="va">False</span>)</code></pre></div>
+<p><img src="images/ml_example_gbdt/6.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>将 learning rate 减到非常小，训练 1500 棵树。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Choose all predictors except target &amp; IDcols</span>
+predictors <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> train.columns <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> [target, IDcol]]
+gbm_tuned_4 <span class="op">=</span> GradientBoostingClassifier(learning_rate<span class="op">=</span><span class="fl">0.005</span>, n_estimators<span class="op">=</span><span class="dv">1500</span>,max_depth<span class="op">=</span><span class="dv">7</span>, min_samples_split<span class="op">=</span><span class="dv">1000</span>, 
+                                         min_samples_leaf<span class="op">=</span><span class="dv">70</span>, subsample<span class="op">=</span><span class="fl">0.80</span>, random_state<span class="op">=</span><span class="dv">10</span>, max_features<span class="op">=</span><span class="dv">7</span>,
+                                         warm_start<span class="op">=</span><span class="va">True</span>)
+modelfit(gbm_tuned_4, train, predictors, performCV<span class="op">=</span><span class="va">False</span>)</code></pre></div>
+<p><img src="images/ml_example_gbdt/7.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>另一个技巧是使用 GBM 的 <code>warm_start</code> 参数。你可以使用它以小步长的增加估计器的数量来测试不同的值，而不用总是从头开始。</p>
+</div>
+</div>
+<div id="section-3.5" class="section level2">
+<h2><span class="header-section-number">3.5</span> 结语</h2>
+<p><strong>上面所有的代码和结果只是通过在测试集上，或者进行全样本度量，或者进行交叉验证得到的。其最终的结果应该在测试集上进行验证。</strong></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="yes-or-no.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="xgboost-python-.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/Hiidiot/MyNotes/edit/master/ml_example_gbdt.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

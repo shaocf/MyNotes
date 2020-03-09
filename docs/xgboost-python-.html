@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4 XGBoost 算法 Python 代码调参 | 学习笔记</title>
+  <meta name="description" content="这里想做一下自己学习过的系统性课程和笔记，先生成 gitbook 形式，完整之后再生成 PDF 文件。" />
+  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4 XGBoost 算法 Python 代码调参 | 学习笔记" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="这里想做一下自己学习过的系统性课程和笔记，先生成 gitbook 形式，完整之后再生成 PDF 文件。" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4 XGBoost 算法 Python 代码调参 | 学习笔记" />
+  
+  <meta name="twitter:description" content="这里想做一下自己学习过的系统性课程和笔记，先生成 gitbook 形式，完整之后再生成 PDF 文件。" />
+  
+
+<meta name="author" content="流风邵" />
+
+
+<meta name="date" content="2020-03-05" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="gbdt-python.html">
+<link rel="next" href="git.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><strong><a href="./">学习笔记</a></strong></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>本书是如何生成的？</a></li>
+<li class="part"><span><b>I 机器学习基石</b></span></li>
+<li class="chapter" data-level="1" data-path="problem.html"><a href="problem.html"><i class="fa fa-check"></i><b>1</b> 学习问题</a><ul>
+<li class="chapter" data-level="1.1" data-path="problem.html"><a href="problem.html#section-1.1"><i class="fa fa-check"></i><b>1.1</b> 什么是机器学习</a></li>
+<li class="chapter" data-level="1.2" data-path="problem.html"><a href="problem.html#section-1.2"><i class="fa fa-check"></i><b>1.2</b> 机器学习组成</a></li>
+<li class="chapter" data-level="1.3" data-path="problem.html"><a href="problem.html#section-1.3"><i class="fa fa-check"></i><b>1.3</b> 机器学习和其它领域</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="problem.html"><a href="problem.html#section-1.3.1"><i class="fa fa-check"></i><b>1.3.1</b> 机器学习和数据挖掘</a></li>
+<li class="chapter" data-level="1.3.2" data-path="problem.html"><a href="problem.html#section-1.3.2"><i class="fa fa-check"></i><b>1.3.2</b> 机器学习和人工智能</a></li>
+<li class="chapter" data-level="1.3.3" data-path="problem.html"><a href="problem.html#section-1.3.3"><i class="fa fa-check"></i><b>1.3.3</b> 机器学习和统计</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="yes-or-no.html"><a href="yes-or-no.html"><i class="fa fa-check"></i><b>2</b> 学习回答 Yes/No</a><ul>
+<li class="chapter" data-level="2.1" data-path="yes-or-no.html"><a href="yes-or-no.html#perceptron-hypothesis-set"><i class="fa fa-check"></i><b>2.1</b> 感知假设集（Perceptron Hypothesis Set）</a></li>
+<li class="chapter" data-level="2.2" data-path="yes-or-no.html"><a href="yes-or-no.html#perceptron-learning-algorithm"><i class="fa fa-check"></i><b>2.2</b> 感知学习算法（Perceptron Learning Algorithm）</a></li>
+<li class="chapter" data-level="2.3" data-path="yes-or-no.html"><a href="yes-or-no.html#pla-guarantee-of-pla"><i class="fa fa-check"></i><b>2.3</b> PLA 的确定性（Guarantee of PLA）</a></li>
+<li class="chapter" data-level="2.4" data-path="yes-or-no.html"><a href="yes-or-no.html#non-separable-data"><i class="fa fa-check"></i><b>2.4</b> 非可分数据集（Non-Separable Data）</a></li>
+</ul></li>
+<li class="part"><span><b>II 机器学习算法实例</b></span></li>
+<li class="chapter" data-level="3" data-path="gbdt-python.html"><a href="gbdt-python.html"><i class="fa fa-check"></i><b>3</b> GBDT 算法 Python 代码调参</a><ul>
+<li class="chapter" data-level="3.1" data-path="gbdt-python.html"><a href="gbdt-python.html#gbm-"><i class="fa fa-check"></i><b>3.1</b> GBM 参数</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="gbdt-python.html"><a href="gbdt-python.html#tree-specific-"><i class="fa fa-check"></i><b>3.1.1</b> Tree-Specific 参数</a></li>
+<li class="chapter" data-level="3.1.2" data-path="gbdt-python.html"><a href="gbdt-python.html#boosting-"><i class="fa fa-check"></i><b>3.1.2</b> Boosting 参数</a></li>
+<li class="chapter" data-level="3.1.3" data-path="gbdt-python.html"><a href="gbdt-python.html#miscellaneous-"><i class="fa fa-check"></i><b>3.1.3</b> Miscellaneous 参数</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="gbdt-python.html"><a href="gbdt-python.html#gbm-"><i class="fa fa-check"></i><b>3.2</b> GBM 参数调整实战</a></li>
+<li class="chapter" data-level="3.3" data-path="gbdt-python.html"><a href="gbdt-python.html#baseline-"><i class="fa fa-check"></i><b>3.3</b> baseline 模型</a></li>
+<li class="chapter" data-level="3.4" data-path="gbdt-python.html"><a href="gbdt-python.html#section-3.4"><i class="fa fa-check"></i><b>3.4</b> 参数调节的一般方法</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="gbdt-python.html"><a href="gbdt-python.html#-learning-rate---tree-based-"><i class="fa fa-check"></i><b>3.4.1</b> 固定 learning rate 和 估计器（树）的数量，调整 tree-based 参数</a></li>
+<li class="chapter" data-level="3.4.2" data-path="gbdt-python.html"><a href="gbdt-python.html#-tree-specific-"><i class="fa fa-check"></i><b>3.4.2</b> 调整 tree-specific 参数</a></li>
+<li class="chapter" data-level="3.4.3" data-path="gbdt-python.html"><a href="gbdt-python.html#-subsample-learning-rate-"><i class="fa fa-check"></i><b>3.4.3</b> 调整 subsample，并且运行更低的 learning rate 下的模型</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="gbdt-python.html"><a href="gbdt-python.html#section-3.5"><i class="fa fa-check"></i><b>3.5</b> 结语</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="xgboost-python-.html"><a href="xgboost-python-.html"><i class="fa fa-check"></i><b>4</b> XGBoost 算法 Python 代码调参</a><ul>
+<li class="chapter" data-level="4.1" data-path="xgboost-python-.html"><a href="xgboost-python-.html#xgboost-"><i class="fa fa-check"></i><b>4.1</b> XGBoost 优点</a></li>
+<li class="chapter" data-level="4.2" data-path="xgboost-python-.html"><a href="xgboost-python-.html#xgboost-"><i class="fa fa-check"></i><b>4.2</b> XGBoost 参数介绍</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="xgboost-python-.html"><a href="xgboost-python-.html#section-4.2.1"><i class="fa fa-check"></i><b>4.2.1</b> 通用参数</a></li>
+<li class="chapter" data-level="4.2.2" data-path="xgboost-python-.html"><a href="xgboost-python-.html#tree-booster-"><i class="fa fa-check"></i><b>4.2.2</b> Tree Booster 参数</a></li>
+<li class="chapter" data-level="4.2.3" data-path="xgboost-python-.html"><a href="xgboost-python-.html#section-4.2.3"><i class="fa fa-check"></i><b>4.2.3</b> 学习任务参数</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="xgboost-python-.html"><a href="xgboost-python-.html#xgboost-"><i class="fa fa-check"></i><b>4.3</b> XGBoost 实例调参</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="xgboost-python-.html"><a href="xgboost-python-.html#section-4.3.1"><i class="fa fa-check"></i><b>4.3.1</b> 调参的通常步骤</a></li>
+<li class="chapter" data-level="4.3.2" data-path="xgboost-python-.html"><a href="xgboost-python-.html#1-learning-rate-learning-rate--number-of-estimators"><i class="fa fa-check"></i><b>4.3.2</b> 第1步：固定 learning rate，找出在这个 learning rate 下的最优的 number of estimators</a></li>
+<li class="chapter" data-level="4.3.3" data-path="xgboost-python-.html"><a href="xgboost-python-.html#2max_depth--min_child_weight-"><i class="fa fa-check"></i><b>4.3.3</b> 第2步：max_depth 和 min_child_weight 调优</a></li>
+<li class="chapter" data-level="4.3.4" data-path="xgboost-python-.html"><a href="xgboost-python-.html#3gamma-"><i class="fa fa-check"></i><b>4.3.4</b> 第3步：gamma 调优</a></li>
+<li class="chapter" data-level="4.3.5" data-path="xgboost-python-.html"><a href="xgboost-python-.html#4subsample--colsample_bytree-"><i class="fa fa-check"></i><b>4.3.5</b> 第4步：subsample 和 colsample_bytree 调优</a></li>
+<li class="chapter" data-level="4.3.6" data-path="xgboost-python-.html"><a href="xgboost-python-.html#5"><i class="fa fa-check"></i><b>4.3.6</b> 第5步：正则化参数调优</a></li>
+<li class="chapter" data-level="4.3.7" data-path="xgboost-python-.html"><a href="xgboost-python-.html#6-learning-rate"><i class="fa fa-check"></i><b>4.3.7</b> 第6步：降低 learning rate</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>III Git 和 GitHub</b></span></li>
+<li class="chapter" data-level="5" data-path="git.html"><a href="git.html"><i class="fa fa-check"></i><b>5</b> Git 使用</a><ul>
+<li class="chapter" data-level="5.1" data-path="git.html"><a href="git.html#section-5.1"><i class="fa fa-check"></i><b>5.1</b> 本地仓库对应远程库</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">学习笔记</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="xgboost--python-" class="section level1">
+<h1><span class="header-section-number">4</span> XGBoost 算法 Python 代码调参</h1>
+<p>本篇文章是从 <a href="https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/">Complete Guide to Parameter Tuning in XGBoost with codes in Python</a> 翻译而来，因为文章是几年前的，所以其中有一点点代码作了修改。而且作者建议再看这篇文章之前最好先看一下 <a href="https://www.analyticsvidhya.com/blog/2016/02/complete-guide-parameter-tuning-gradient-boosting-gbm-python/">Complete Guide to Parameter Tuning in Gradient Boosting (GBM) in Python</a>。下面我们还是先对 XGBoost 进行分析总结。</p>
+<div id="xgboost-" class="section level2">
+<h2><span class="header-section-number">4.1</span> XGBoost 优点</h2>
+<p>XGBoost算法可以给预测模型带来能力的提升。当我对它的表现有更多了解的时候，当我对它的高准确率背后的原理有更多了解的时候，我发现它具有很多优势：</p>
+<p>1、正则化</p>
+<p>标准GBM的实现没有像XGBoost这样的正则化步骤。正则化对减少过拟合也是有帮助的。 实际上，XGBoost以“正则化提升(regularized boosting)”技术而闻名。</p>
+<p>2、并行处理</p>
+<p>XGBoost可以实现并行处理，相比GBM有了速度的飞跃。 不过，众所周知，Boosting算法是顺序处理的，它怎么可能并行呢？每一课树的构造都依赖于前一棵树，那具体是什么让我们能用多核处理器去构造一个树呢？我希望你理解了这句话的意思。 XGBoost 也支持Hadoop实现。</p>
+<p>3、高度的灵活性</p>
+<p>XGBoost 允许用户定义自定义优化目标和评价标准 它对模型增加了一个全新的维度，所以我们的处理不会受到任何限制。</p>
+<p>4、缺失值处理</p>
+<p>XGBoost内置处理缺失值的规则。 用户需要提供一个和其它样本不同的值，然后把它作为一个参数传进去，以此来作为缺失值的取值。XGBoost在不同节点遇到缺失值时采用不同的处理方法，并且会学习未来遇到缺失值时的处理方法。</p>
+<p>5、剪枝</p>
+<p>当分裂时遇到一个负损失时，GBM会停止分裂。因此GBM实际上是一个贪心算法。 XGBoost会一直分裂到指定的最大深度(max_depth)，然后回过头来剪枝。如果某个节点之后不再有正值，它会去除这个分裂。 这种做法的优点，当一个负损失（如-2）后面有个正损失（如+10）的时候，就显现出来了。GBM会在-2处停下来，因为它遇到了一个负值。但是XGBoost会继续分裂，然后发现这两个分裂综合起来会得到+8，因此会保留这两个分裂。</p>
+<p>6、内置交叉验证</p>
+<p>XGBoost允许在每一轮boosting迭代中使用交叉验证。因此，可以方便地获得最优boosting迭代次数。 而GBM使用网格搜索，只能检测有限个值。</p>
+<p>7、在已有的模型基础上继续</p>
+<p>XGBoost可以在上一轮的结果上继续训练。这个特性在某些特定的应用上是一个巨大的优势。 sklearn中的GBM的实现也有这个功能，两种算法在这一点上是一致的。</p>
+</div>
+<div id="xgboost-" class="section level2">
+<h2><span class="header-section-number">4.2</span> XGBoost 参数介绍</h2>
+<p>在运行 XGBoost 之前，我们必须设置三类参数：</p>
+<ol style="list-style-type: decimal">
+<li><p>通用参数：进行宏观控制</p></li>
+<li><p>Booster 参数：在每一步控制 booster</p></li>
+<li><p>学习任务参数：</p></li>
+</ol>
+<div id="section-4.2.1" class="section level3">
+<h3><span class="header-section-number">4.2.1</span> 通用参数</h3>
+<ol style="list-style-type: decimal">
+<li>booster（默认 gbtree）</li>
+</ol>
+<p>可以是 gbtree，gblinear 或者 dart，gbtree 和 dart 为基于 tree 的模型，而 gblinear 为线性模型。</p>
+<ol start="2" style="list-style-type: decimal">
+<li>verbosity（默认 1）</li>
+</ol>
+<p>打印信息，0：silent，1：warning，2：info，3：debug</p>
+<ol start="3" style="list-style-type: decimal">
+<li>nthread（如果没有设置，默认为最大线程数）</li>
+</ol>
+<p>运行 XGBoost 的并行线程的数量</p>
+</div>
+<div id="tree-booster-" class="section level3">
+<h3><span class="header-section-number">4.2.2</span> Tree Booster 参数</h3>
+<ol style="list-style-type: decimal">
+<li>eta（默认 0.3，别名：learning_rate）</li>
+</ol>
+<ul>
+<li><p>通过设定每一次迭代的权重来提高模型的 robust；</p></li>
+<li><p>取值范围 [0, 1]</p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>gamma（默认 0，别名：min_split_loss）</li>
+</ol>
+<ul>
+<li><p>在节点分裂时，当损失减少超过 gamma 时，才进行分裂。这个参数越大，算法越保守。</p></li>
+<li><p>取值范围：[0, +Inf)</p></li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>max_depth（默认 6）</li>
+</ol>
+<ul>
+<li><p>树的最大深度，深度越大，模型越复杂，并且更可能会过拟合。</p></li>
+<li><p>取值范围：[0, +Inf)</p></li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>min_child_weight（默认 1）</li>
+</ol>
+<ul>
+<li>决定最小叶子节点样本权重和。 和GBM的 min_child_leaf 参数类似，但不完全一样。XGBoost的这个参数是最小样本权重的和，而GBM参数是最小样本总数。 这个参数用于避免过拟合。当它的值较大时，可以避免模型学习到局部的特殊样本。 但是如果这个值过高，会导致欠拟合。这个参数需要使用CV来调整。</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li>max_delta_step（默认 0）</li>
+</ol>
+<ul>
+<li>这参数限制每棵树权重改变的最大步长。如果这个参数的值为0，那就意味着没有约束。如果它被赋予了某个正值，那么它会让这个算法更加保守。 通常，这个参数不需要设置。但是当各类别的样本十分不平衡时，它对逻辑回归是很有帮助的。 这个参数一般用不到，但是你可以挖掘出来它更多的用处。</li>
+</ul>
+<ol start="6" style="list-style-type: decimal">
+<li>subsample（默认 1）</li>
+</ol>
+<ul>
+<li><p>控制每棵树随机采样的比例。减小这个参数值，算法会更加保守，避免过拟合。如果设置的太小，可能导致欠拟合。</p></li>
+<li><p>通常选择范围：0.5 ~ 1</p></li>
+</ul>
+<ol start="7" style="list-style-type: decimal">
+<li>colsample_bytree, colsample_bylevel, colsample_bynode（默认 1）</li>
+</ol>
+<ul>
+<li><p>colsample_bytree 控制每棵树随机采样的特征的占比。通常选择范围：0.5 ~ 1</p></li>
+<li><p>colsample_bylevel 控制树的每一级的每一次分裂，对列数的采样的占比，一般不太用，因为 subsample 和 colsample_bytree 可以起到同样的作用。</p></li>
+</ul>
+<ol start="8" style="list-style-type: decimal">
+<li>lambda（默认 1，别名：reg_lambda）</li>
+</ol>
+<ul>
+<li>权重的 L2 正则化项。</li>
+</ul>
+<ol start="9" style="list-style-type: decimal">
+<li>alpha（默认 0，别名：reg_alpha）</li>
+</ol>
+<ul>
+<li>权重的 L1 正则化项，可以用在很高维的情况下，算法速度更快。</li>
+</ul>
+<ol start="10" style="list-style-type: decimal">
+<li>scale_pos_weight（默认 1）</li>
+</ol>
+<p>在各类别样本十分不平衡时，把这个参数设定为一个正值，可以使算法更快收敛。</p>
+</div>
+<div id="section-4.2.3" class="section level3">
+<h3><span class="header-section-number">4.2.3</span> 学习任务参数</h3>
+<p>用来控制理想的优化目标和每一步结果的度量方法。</p>
+<ol style="list-style-type: decimal">
+<li>objective（默认 reg:squarederror），指定最小化的目标函数。</li>
+</ol>
+<ul>
+<li><p>reg:squarederror：针对回归的平方损失</p></li>
+<li><p>reg:logistic：Logisitic 回归</p></li>
+<li><p>multi:softmax：使用 softmax 目标函数来做多分类，此时也需要设置 num_class</p></li>
+</ul>
+<p>还有其它<a href="https://xgboost.readthedocs.io/en/latest/parameter.html">几种目标函数</a></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>eval_metric（根据选择的 objective 有不同的默认值）</p></li>
+<li><p>seed（默认 0）</p></li>
+</ol>
+<p>随机数的种子，可以复现随机数据的结果。</p>
+</div>
+</div>
+<div id="xgboost-" class="section level2">
+<h2><span class="header-section-number">4.3</span> XGBoost 实例调参</h2>
+<p>我们在这一节所针对的问题可以在 <a href="https://datahack.analyticsvidhya.com/contest/data-hackathon-3x/">Data Hackathon 3.x</a> 上面找到，数据可以在<a href="https://www.analyticsvidhya.com/wp-content/uploads/2016/02/Dataset.rar">这里下载</a>。本篇文章代码可以在<a href="https://github.com/aarshayj/analytics_vidhya/tree/master/Articles/Parameter_Tuning_XGBoost_with_Example">这里下载</a>下面我们使用的数据是经过预处理的，旨在将重点放在调参的过程。</p>
+<p>先导入模块和加载数据：</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> numpy <span class="im">as</span> np
+<span class="im">import</span> pandas <span class="im">as</span> pd
+<span class="im">import</span> xgboost <span class="im">as</span> xgb
+<span class="im">from</span> xgboost.sklearn <span class="im">import</span> XGBClassifier
+<span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_validate
+<span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV
+<span class="im">from</span> sklearn <span class="im">import</span> metrics
+
+<span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt
+<span class="op">%</span>matplotlib inline
+plt.rcParams[<span class="st">&#39;figure.figsize&#39;</span>] <span class="op">=</span> (<span class="dv">12</span>, <span class="dv">4</span>)
+
+train <span class="op">=</span> pd.read.csv(<span class="st">&#39;train_modified.csv&#39;</span>)
+test <span class="op">=</span> pd.read.csv(<span class="st">&#39;test_modified.csv&#39;</span>)
+target <span class="op">=</span> <span class="st">&#39;Disbursed&#39;</span>
+IDcol <span class="op">=</span> <span class="st">&#39;ID&#39;</span></code></pre></div>
+<p>这里可以看到导入了两种形式的 XGBoost：</p>
+<ol style="list-style-type: decimal">
+<li><p>xgboost：这是一个直接的 xgboost 库，我们将会使用这个库中的一个专门函数 cv 来找出迭代的最佳次数，因为这个函数在每次迭代都会进行交叉验证。</p></li>
+<li><p>XGBClassifier：这是 XGBoost 的 sklearn 接口，我们可以使用 sklearn 的 GridSearchCV 来进行参数调优。</p></li>
+</ol>
+<p>在继续进行之前，定义一个可以帮助我们创建 XGBoost 模型和执行 cross-validation 的函数，这个函数可以用到自己以后的模型中。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># test_result.csv 文件不存在，它是测试集的结果</span>
+<span class="co"># test_results = pd.read_csv(&#39;test_results.csv&#39;)</span>
+<span class="kw">def</span> modelfit(alg, dtrain, dtest, predictors, useTrainCV<span class="op">=</span><span class="va">True</span>, cv_folds<span class="op">=</span><span class="dv">5</span>, early_stopping_rounds<span class="op">=</span><span class="dv">50</span>): 
+    <span class="co"># 这一步的作用是在给定条件下，找出最佳的 estimator 的数量</span>
+    <span class="cf">if</span> useTrainCV:
+        xgb_param <span class="op">=</span> alg.get_xgb_params()
+        xgtrain <span class="op">=</span> xgb.DMatrix(dtrain[predictors].values, label<span class="op">=</span>dtrain[target].values)
+        xgtest <span class="op">=</span> xgb.DMatrix(dtest[predictors].values)
+        <span class="co"># 在每一轮都进行交叉验证，最后选取最好的 estimator 的数量，这一步是关键</span>
+        cvresult <span class="op">=</span> xgb.cv(xgb_param, xgtrain, num_boost_round<span class="op">=</span>alg.get_params()[<span class="st">&#39;n_estimators&#39;</span>], nfold<span class="op">=</span>cv_folds,
+            metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>, early_stopping_rounds<span class="op">=</span>early_stopping_rounds)
+        alg.set_params(n_estimators<span class="op">=</span>cvresult.shape[<span class="dv">0</span>])
+    
+    <span class="co"># 拟合训练集</span>
+    alg.fit(dtrain[predictors], dtrain[<span class="st">&#39;Disbursed&#39;</span>], eval_metric<span class="op">=</span><span class="st">&#39;auc&#39;</span>)
+        
+    <span class="co"># 在训练集上进行预测</span>
+    dtrain_predictions <span class="op">=</span> alg.predict(dtrain[predictors])
+    dtrain_predprob <span class="op">=</span> alg.predict_proba(dtrain[predictors])[:,<span class="dv">1</span>]
+        
+    <span class="co"># 打印模型在训练集上评价报告</span>
+    <span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Model Report&quot;</span>)
+    <span class="bu">print</span>(<span class="st">&quot;Accuracy : </span><span class="sc">%.4g</span><span class="st">&quot;</span> <span class="op">%</span> metrics.accuracy_score(dtrain[<span class="st">&#39;Disbursed&#39;</span>].values, dtrain_predictions))
+    <span class="bu">print</span>(<span class="st">&quot;AUC Score (Train): </span><span class="sc">%f</span><span class="st">&quot;</span> <span class="op">%</span> metrics.roc_auc_score(dtrain[<span class="st">&#39;Disbursed&#39;</span>], dtrain_predprob))
+    
+    <span class="co"># 打印模型在测试集上评价报告，由于测试集的实际标签未知，这部分只是用来让我们对模型的评价有个更好的认知                                       </span>
+<span class="co">#     dtest[&#39;predprob&#39;] = alg.predict_proba(dtest[predictors])[:,1]</span>
+<span class="co">#     results = test_results.merge(dtest[[&#39;ID&#39;,&#39;predprob&#39;]], on=&#39;ID&#39;)</span>
+<span class="co">#     print(&#39;AUC Score (Test): %f&#39; % metrics.roc_auc_score(results[&#39;Disbursed&#39;], results[&#39;predprob&#39;]))</span>
+
+    <span class="co"># 特征重要性</span>
+    plt.rcParams[<span class="st">&#39;figure.figsize&#39;</span>] <span class="op">=</span> (<span class="dv">12</span>, <span class="dv">4</span>)
+    feat_imp <span class="op">=</span> pd.Series(alg.feature_importances_, index<span class="op">=</span>predictors).sort_values(ascending<span class="op">=</span><span class="va">False</span>)
+    feat_imp.plot(kind<span class="op">=</span><span class="st">&#39;bar&#39;</span>, title<span class="op">=</span><span class="st">&#39;Feature Importances&#39;</span>)
+    plt.ylabel(<span class="st">&#39;Feature Importance Score&#39;</span>)</code></pre></div>
+<blockquote>
+<p><a href="https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/">参考文章</a>在写作时，xgboost 的 sklearn 接口还没有 <code>feature_importances_</code> 属性，使用 <code>get_fscore()</code> 来完成同样的操作， 而现在有了这个功能。</p>
+</blockquote>
+<div id="section-4.3.1" class="section level3">
+<h3><span class="header-section-number">4.3.1</span> 调参的通常步骤</h3>
+<ol style="list-style-type: decimal">
+<li><p>选择一个相对<strong>较高的 learning_rate</strong>。通常 learning rate 为 0.1 时较好，但是针对不同的问题可以设置为 0.05 到 0.3 之间。通过使用 XGBoost 的 <code>cv</code> 函数找出在这个学习率下的<strong>最优的树的数量（即迭代次数）</strong>。</p></li>
+<li><p>在确定的 learning rate 和 number of trees 的情况下，调整<strong>针对树的参数</strong>（max_depth, min_child_weight, gamma, subsample, colsample_bytree）。</p></li>
+<li><p>调整<strong>正则化参数</strong>（lambda, alpha），这可以帮助我们减少模型复杂度并提高模型性能。</p></li>
+<li><p><strong>降低 learning rate</strong> 且确定最优的参数。</p></li>
+</ol>
+<p>下面就通过实例来实现具体细节。</p>
+</div>
+<div id="1-learning-rate-learning-rate--number-of-estimators" class="section level3">
+<h3><span class="header-section-number">4.3.2</span> 第1步：固定 learning rate，找出在这个 learning rate 下的最优的 number of estimators</h3>
+<p>为了确定迭代的次数，我们需要设置其它一些参数的初始值，如下：</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># XGBClassifier 默认参数</span>
+xgboost.XGBClassifier(max_depth<span class="op">=</span><span class="dv">3</span>, learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">100</span>, 
+verbosity<span class="op">=</span><span class="dv">1</span>, objective<span class="op">=</span><span class="st">&#39;binary:logistic&#39;</span>, booster<span class="op">=</span><span class="st">&#39;gbtree&#39;</span>, tree_method<span class="op">=</span><span class="st">&#39;auto&#39;</span>,
+n_jobs<span class="op">=</span><span class="dv">1</span>, gpu_id<span class="op">=-</span><span class="dv">1</span>, gamma<span class="op">=</span><span class="dv">0</span>, min_child_weight<span class="op">=</span><span class="dv">1</span>, max_delta_step<span class="op">=</span><span class="dv">0</span>, subsample<span class="op">=</span><span class="dv">1</span>,
+colsample_bytree<span class="op">=</span><span class="dv">1</span>, colsample_bylevel<span class="op">=</span><span class="dv">1</span>, colsample_bynode<span class="op">=</span><span class="dv">1</span>, reg_alpha<span class="op">=</span><span class="dv">0</span>, reg_lambda<span class="op">=</span><span class="dv">1</span>,
+scale_pos_weight<span class="op">=</span><span class="dv">1</span>, base_score<span class="op">=</span><span class="fl">0.5</span>, random_state<span class="op">=</span><span class="dv">0</span>, missing<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</code></pre></div>
+<ol style="list-style-type: decimal">
+<li><p><strong>max_depth = 5</strong>：这个值应该设置在 3 到 10 之间。我们在这里选择了 5，初始值选择 4 ~ 6 比较好。</p></li>
+<li><p><strong>min_child_weight = 1</strong>：这里选择的值比较小，因为这里是一个高度不平衡的分类问题，并且叶子节点有更小的 size group。</p></li>
+<li><p><strong>gamma = 0</strong>：初始值也可以选择一个 0.1 ~ 0.2 之间的比较小的值，后面会进行调整。</p></li>
+<li><p><strong>subsample, colsample_bytree = 0.8</strong>： 0.8 通常是选择的初始值，典型值一般在 0.5 ~ 0.9 之间。</p></li>
+<li><p><strong>scale_pos_weight = 1</strong>：由于高度的类别不均衡问题。</p></li>
+</ol>
+<p>上面的参数只是初始模型的值，后面将会进行调优。先取默认的 learning_rate = 0.1，利用 xgboost 的 cv 函数来得到最后的树的数量。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">predictors <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> train.columns <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> [target, IDcol]]
+xgb1 <span class="op">=</span> XGBClassifier(
+        learning_rate <span class="op">=</span><span class="fl">0.1</span>,
+        n_estimators<span class="op">=</span><span class="dv">1000</span>,
+        max_depth<span class="op">=</span><span class="dv">5</span>,
+        min_child_weight<span class="op">=</span><span class="dv">1</span>,
+        gamma<span class="op">=</span><span class="dv">0</span>,
+        subsample<span class="op">=</span><span class="fl">0.8</span>,
+        colsample_bytree<span class="op">=</span><span class="fl">0.8</span>,
+        objective<span class="op">=</span> <span class="st">&#39;binary:logistic&#39;</span>,
+        n_jobs<span class="op">=</span><span class="dv">4</span>,
+        scale_pos_weight<span class="op">=</span><span class="dv">1</span>,
+        random_state<span class="op">=</span><span class="dv">27</span>)
+        
+modelfit(xgb1, train, test, predictors)</code></pre></div>
+<p><img src="images/ml_example_xgboost/1.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>在 learning rate 为 0.1 的情况下，得到最优的 estimator 的数量为 127。这个迭代次数还是比较高的，运行速度会比较慢，如果想运行更快一些，可以适当增大 learning rate，使得迭代次数减小，然后重新运行代码。</p>
+<blockquote>
+<p>这里和原文有差别，原文最优迭代次数为 140，而且 AUC 为 0.899857，而且我在不同的电脑下运行的结果会有所不同，下面仍然延续我自己的运行结果。</p>
+</blockquote>
+</div>
+<div id="2max_depth--min_child_weight-" class="section level3">
+<h3><span class="header-section-number">4.3.3</span> 第2步：max_depth 和 min_child_weight 调优</h3>
+<p>我们首先调整这两个参数，是因为他们对模型结果起着更重要的作用。首先我们会给它们一个相对比较大的范围进行选择，进而在更小的范围内进行调整。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">param_test1 <span class="op">=</span> {
+    <span class="st">&#39;max_depth&#39;</span>: <span class="bu">range</span>(<span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">2</span>),
+    <span class="st">&#39;min_child_weight&#39;</span>: <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">6</span>, <span class="dv">2</span>)
+}
+
+gsearch1 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> XGBClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">140</span>, max_depth<span class="op">=</span><span class="dv">5</span>,
+                                        min_child_weight<span class="op">=</span><span class="dv">1</span>, gamma<span class="op">=</span><span class="dv">0</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, colsample_bytree<span class="op">=</span><span class="fl">0.8</span>,                                  objective<span class="op">=</span><span class="st">&#39;binary:logistic&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, scale_pos_weight<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">27</span>), 
+                       param_grid <span class="op">=</span> param_test1, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+gsearch1.fit(train[predictors], train[target])
+
+gsearch1.best_params_, gsearch1.best_score_, gsearch1.best_index_
+<span class="co"># gsearch1.cv_results_</span>
+
+<span class="co"># 下面是输出结果</span>
+<span class="co"># ({&#39;max_depth&#39;: 5, &#39;min_child_weight&#39;: 1}, 0.840843728748068, 3)</span></code></pre></div>
+<p>通过网格搜索得到理想的值为 max_depth = 5, min_child_weight = 1，我们还可以进一步进行调优。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">param_test2 <span class="op">=</span> {
+    <span class="st">&#39;max_depth&#39;</span>: [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>],
+    <span class="st">&#39;min_child_weight&#39;</span>: [<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>]
+}
+
+gsearch2 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> XGBClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">140</span>, max_depth<span class="op">=</span><span class="dv">5</span>,
+                                        min_child_weight<span class="op">=</span><span class="dv">1</span>, gamma<span class="op">=</span><span class="dv">0</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, colsample_bytree<span class="op">=</span><span class="fl">0.8</span>,                                       objective<span class="op">=</span><span class="st">&#39;binary:logistic&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, scale_pos_weight<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">27</span>), 
+                       param_grid <span class="op">=</span> param_test1, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+gsearch2.fit(train[predictors], train[target])
+
+gsearch2.best_params_, gsearch2.best_score_, gsearch2.cv_results_
+
+<span class="co"># 输出结果</span>
+<span class="co"># ({&#39;max_depth&#39;: 5, &#39;min_child_weight&#39;: 0.5}, 0.841487748458784)</span></code></pre></div>
+<p>这里我们进一步得到更优的参数值。</p>
+<blockquote>
+<p>事实上，这里如果取 min_child_weight = 0 时结果会交叉验证结果会更好，这里以后需要进一步思考。</p>
+</blockquote>
+</div>
+<div id="3gamma-" class="section level3">
+<h3><span class="header-section-number">4.3.4</span> 第3步：gamma 调优</h3>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Choose all predictors except target &amp; IDcols</span>
+param_test3 <span class="op">=</span> {
+    <span class="st">&#39;gamma&#39;</span>:[i<span class="op">/</span><span class="fl">10.0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,<span class="dv">5</span>)]
+}
+gsearch3 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> XGBClassifier(learning_rate <span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">127</span>, max_depth<span class="op">=</span><span class="dv">5</span>,
+                                        min_child_weight<span class="op">=</span><span class="fl">0.5</span>, gamma<span class="op">=</span><span class="dv">0</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, colsample_bytree<span class="op">=</span><span class="fl">0.8</span>, objective<span class="op">=</span> <span class="st">&#39;binary:logistic&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, scale_pos_weight<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">27</span>), 
+                       param_grid <span class="op">=</span> param_test3, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>,iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+gsearch3.fit(train[predictors],train[target])
+
+gsearch3.best_params_, gsearch3.best_score_
+
+<span class="co"># 输出结果</span>
+<span class="co"># ({&#39;gamma&#39;: 0.1}, 0.8415932289178458)</span></code></pre></div>
+<p>这里表明 gamma 的最优值为 0.1，现在我们已经调整了几个参数的值，在进一步调优其它参数之前，我们重新校准一下迭代的次数会比较好。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">xgb2 <span class="op">=</span> XGBClassifier(
+        learning_rate<span class="op">=</span><span class="fl">0.1</span>,
+        n_estimators<span class="op">=</span><span class="dv">1000</span>,
+        max_depth<span class="op">=</span><span class="dv">5</span>,
+        min_child_weight<span class="op">=</span><span class="fl">0.5</span>,
+        gamma<span class="op">=</span><span class="fl">0.1</span>,
+        subsample<span class="op">=</span><span class="fl">0.8</span>,
+        colsample_bytree<span class="op">=</span><span class="fl">0.8</span>,
+        objective<span class="op">=</span> <span class="st">&#39;binary:logistic&#39;</span>,
+        n_jobs<span class="op">=</span><span class="dv">4</span>,
+        scale_pos_weight<span class="op">=</span><span class="dv">1</span>,
+        random_state<span class="op">=</span><span class="dv">27</span>)
+
+modelfit(xgb2, train, test, predictors)</code></pre></div>
+<p><img src="images/ml_example_xgboost/2.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>这里得到的最优迭代次数为 125，将下面的模型参数 n_estimators 设置为 125。并且我们已经调整过的参数为：</p>
+<ul>
+<li>max_depth: 5</li>
+<li>min_child_weight: 0.5</li>
+<li>gamma: 0.1</li>
+</ul>
+</div>
+<div id="4subsample--colsample_bytree-" class="section level3">
+<h3><span class="header-section-number">4.3.5</span> 第4步：subsample 和 colsample_bytree 调优</h3>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Grid seach on subsample and colsample_bytree</span>
+<span class="co">#Choose all predictors except target &amp; IDcols</span>
+param_test4 <span class="op">=</span> {
+    <span class="st">&#39;subsample&#39;</span>: [i<span class="op">/</span><span class="fl">10.0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>, <span class="dv">10</span>)],
+    <span class="st">&#39;colsample_bytree&#39;</span>: [i<span class="op">/</span><span class="fl">10.0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>, <span class="dv">10</span>)]
+}
+gsearch4 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> XGBClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">125</span>, max_depth<span class="op">=</span><span class="dv">5</span>,
+                                        min_child_weight<span class="op">=</span><span class="fl">0.5</span>, gamma<span class="op">=</span><span class="fl">0.1</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, colsample_bytree<span class="op">=</span><span class="fl">0.8</span>,
+                                        objective<span class="op">=</span> <span class="st">&#39;binary:logistic&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, scale_pos_weight<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">27</span>), 
+                       param_grid <span class="op">=</span> param_test4, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+
+gsearch4.fit(train[predictors],train[target])
+
+gsearch4.best_params_, gsearch4.best_score_
+
+<span class="co"># 输出结果</span>
+<span class="co"># ({&#39;colsample_bytree&#39;: 0.8, &#39;subsample&#39;: 0.8}, 0.8416429886456491)</span></code></pre></div>
+<p>我们得到两个参数值都为 0.8，下面在其附近各间隔 0.05，对参数进一步调优：</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">#Grid seach on subsample and colsample_bytree</span>
+<span class="co">#Choose all predictors except target &amp; IDcols</span>
+param_test5 <span class="op">=</span> {
+    <span class="st">&#39;subsample&#39;</span>: [i<span class="op">/</span><span class="fl">100.0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">75</span>, <span class="dv">90</span>, <span class="dv">5</span>)],
+    <span class="st">&#39;colsample_bytree&#39;</span>: [i<span class="op">/</span><span class="fl">100.0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">75</span>, <span class="dv">90</span>, <span class="dv">5</span>)]
+}
+gsearch5 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> XGBClassifier(learning_rate  <span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">125</span>, max_depth<span class="op">=</span><span class="dv">5</span>,
+                                        min_child_weight<span class="op">=</span><span class="fl">0.5</span>, gamma<span class="op">=</span><span class="fl">0.1</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, colsample_bytree<span class="op">=</span><span class="fl">0.8</span>,
+                                        objective<span class="op">=</span> <span class="st">&#39;binary:logistic&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, scale_pos_weight<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">27</span>), 
+                       param_grid <span class="op">=</span> param_test5, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+
+gsearch5.fit(train[predictors],train[target])
+
+gsearch5.best_params_, gsearch5.best_score_
+
+<span class="co"># 输出结果</span>
+({<span class="st">&#39;colsample_bytree&#39;</span>: <span class="fl">0.75</span>, <span class="st">&#39;subsample&#39;</span>: <span class="fl">0.8</span>}, <span class="fl">0.8418225792742493</span>)</code></pre></div>
+</div>
+<div id="5" class="section level3">
+<h3><span class="header-section-number">4.3.6</span> 第5步：正则化参数调优</h3>
+<p>这一步利用正则化去减少过拟合。由于 gamma 也可以控制模型复杂度，所以很多人不再使用正则化参数，但是我们应该还是要尝试一下。先调整 reg_alpha，在调整 reg_lambda。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># tune reg_alpha</span>
+param_test6 <span class="op">=</span> {
+    <span class="st">&#39;reg_alpha&#39;</span>: [<span class="dv">0</span>, <span class="fl">1e-5</span>, <span class="fl">1e-2</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">100</span>]
+}
+gsearch6 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> XGBClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">125</span>, max_depth<span class="op">=</span><span class="dv">5</span>,
+                                        min_child_weight<span class="op">=</span><span class="fl">0.5</span>, gamma<span class="op">=</span><span class="fl">0.1</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, colsample_bytree<span class="op">=</span><span class="fl">0.75</span>,
+                                        objective<span class="op">=</span><span class="st">&#39;binary:logistic&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, scale_pos_weight<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">27</span>), 
+                       param_grid <span class="op">=</span> param_test6, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+
+gsearch6.fit(train[predictors], train[target])
+
+gsearch6.best_params_, gsearch6.best_score_
+
+<span class="co"># 输出结果</span>
+<span class="co"># ({&#39;reg_alpha&#39;: 0}, 0.8418225792742493)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># tune reg_lambda</span>
+param_test7 <span class="op">=</span> {
+    <span class="st">&#39;reg_lambda&#39;</span>: [<span class="fl">0.8</span>, <span class="fl">0.9</span>, <span class="fl">1.0</span>]
+}
+gsearch7 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> XGBClassifier(learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">125</span>, max_depth<span class="op">=</span><span class="dv">5</span>,
+                                        min_child_weight<span class="op">=</span><span class="fl">0.5</span>, gamma<span class="op">=</span><span class="fl">0.1</span>, subsample<span class="op">=</span><span class="fl">0.8</span>, colsample_bytree<span class="op">=</span><span class="fl">0.75</span>,
+                                        objective<span class="op">=</span><span class="st">&#39;binary:logistic&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, scale_pos_weight<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">27</span>), 
+                       param_grid <span class="op">=</span> param_test7, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>, n_jobs<span class="op">=</span><span class="dv">4</span>, iid<span class="op">=</span><span class="va">False</span>, cv<span class="op">=</span><span class="dv">5</span>)
+
+gsearch7.fit(train[predictors],train[target])
+
+gsearch7.best_params_, gsearch7.best_score_
+
+<span class="co"># 输出结果</span>
+<span class="co"># ({&#39;reg_lambda&#39;: 1.0}, 0.8418225792742493)</span></code></pre></div>
+<p>现在我们可以将所有调优的参数带入模型，看模型表现。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">xgb3 <span class="op">=</span> XGBClassifier(
+        learning_rate <span class="op">=</span><span class="fl">0.1</span>,
+        n_estimators<span class="op">=</span><span class="dv">1000</span>,
+        max_depth<span class="op">=</span><span class="dv">5</span>,
+        min_child_weight<span class="op">=</span><span class="fl">0.5</span>,
+        gamma<span class="op">=</span><span class="fl">0.1</span>,
+        subsample<span class="op">=</span><span class="fl">0.8</span>,
+        colsample_bytree<span class="op">=</span><span class="fl">0.75</span>,
+        reg_alpha<span class="op">=</span><span class="dv">0</span>,
+        reg_lambda<span class="op">=</span><span class="fl">1.0</span>,
+        objective<span class="op">=</span> <span class="st">&#39;binary:logistic&#39;</span>,
+        n_jobs<span class="op">=</span><span class="dv">4</span>,
+        scale_pos_weight<span class="op">=</span><span class="dv">1</span>,
+        random_state<span class="op">=</span><span class="dv">27</span>)
+        
+modelfit(xgb3, train, test, predictors)</code></pre></div>
+<p><img src="images/ml_example_xgboost/3.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>再一次，我们看到模型有所改善。</p>
+</div>
+<div id="6-learning-rate" class="section level3">
+<h3><span class="header-section-number">4.3.7</span> 第6步：降低 learning rate</h3>
+<p>最后，我们应该降低 learning rate，然后增加更多的树（迭代）。下面我们利用 xgboost 的 cv 函数再一次进行交叉验证。</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">xgb4 <span class="op">=</span> XGBClassifier(
+        learning_rate <span class="op">=</span><span class="fl">0.01</span>,
+        n_estimators<span class="op">=</span><span class="dv">5000</span>,
+        max_depth<span class="op">=</span><span class="dv">5</span>,
+        min_child_weight<span class="op">=</span><span class="fl">0.5</span>,
+        gamma<span class="op">=</span><span class="fl">0.1</span>,
+        subsample<span class="op">=</span><span class="fl">0.8</span>,
+        colsample_bytree<span class="op">=</span><span class="fl">0.75</span>,
+        reg_alpha<span class="op">=</span><span class="dv">0</span>,
+        objective<span class="op">=</span> <span class="st">&#39;binary:logistic&#39;</span>,
+        n_jobs<span class="op">=</span><span class="dv">4</span>,
+        scale_pos_weight<span class="op">=</span><span class="dv">1</span>,
+        random_state<span class="op">=</span><span class="dv">27</span>)
+        
+modelfit(xgb4, train, test, predictors)</code></pre></div>
+<p><img src="images/ml_example_xgboost/4.png" width="75%" style="display: block; margin: auto;" /></p>
+<p>现在我们可以看到模型性能上的提升以及参数调整所带来的的影响。在这里我要分享两个观点：</p>
+<ol style="list-style-type: decimal">
+<li><p>仅仅通过调整参数或者稍微更好的模型而达到性能上的跳跃提升是非常困难的。在 GBM 上的最大得分是 0.8487，而在 XGBoost 上是 0.8494（这里是指在测试集上的 AUC，这里我们没有测试集），有一定的改善，但不是很大。</p></li>
+<li><p>想要在性能上得到较大的改善可以通过特征工程，以及模型融合，stacking 等。</p></li>
+</ol>
+
+</div>
+</div>
+</div>
+
+
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="gbdt-python.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="git.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/Hiidiot/MyNotes/edit/master/ml_example_xgboost.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

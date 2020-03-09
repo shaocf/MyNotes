@@ -6,6 +6,9 @@ rmd_files: [
   "mlf_1.Rmd",
   "mlf_2.Rmd",
 
+  "ml_example_gbdt.Rmd",
+  "ml_example_xgboost.Rmd",
+
   "git_1.Rmd",
 
 
